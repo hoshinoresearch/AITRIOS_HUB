@@ -88,6 +88,9 @@ class CongestionDemoView(QWidget):
         # 終了イベントの処理を設定
         app.aboutToQuit.connect(self.on_exit)
 
+        # 自動でコマンドパラメータのIPアドレスを更新
+        self._controller.set_config_host(self.env_accessor.get_command_param_file_name())
+        
         # 自動で推論を開始
         self._controller.start_inference(self.env_accessor.get_device_id())
         self.timer_proc()
