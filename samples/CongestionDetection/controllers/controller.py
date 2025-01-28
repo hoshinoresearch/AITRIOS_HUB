@@ -58,7 +58,7 @@ class Controller(QObject):
 
         print(self.get_base_url())
         print(payload)
-        response = requests.post(f"{self.get_base_url()}/{device_id}/start_inference/", json=payload)
+        response = requests.post(f"http://{self.get_base_url()}/{device_id}/start_inference/", json=payload)
         print(response)
         if response.status_code != 200:
             return
