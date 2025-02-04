@@ -3,6 +3,8 @@ import json
 import requests
 import cv2
 import numpy as np
+import os
+from dotenv import load_dotenv
 
 class Utils:
     @staticmethod
@@ -181,6 +183,13 @@ class ConsoleRESTAPI:
         )
         return ret
 
+    # デバイス取得
+    def GetDevices(self):
+        ret = self.Request(
+            url="/devices",
+            method="GET",
+        )
+        return ret
     
 # 画像ファイルに保存する関数
 def save_base64_as_image(base64_string, output_path):
@@ -196,43 +205,27 @@ def save_base64_as_image(base64_string, output_path):
     print(f"Image saved to {output_path}")
 
 
+import AITRIOSDevice
 def main():
     base_url = "https://console.aitrios.sony-semicon.com/api/v1"
-    client_id = "0oaktgw65lfAmKtBC697"
-    client_secret = "41gjJ4jQDThuTAZyqZHAMlFpEkrd2oAYI259-0ru3K9jSxsWUr0aHq05QCpHjKeS"
+    load_dotenv()
+    client_id = os.getenv("CLIENT_ID")
+    client_secret = os.getenv("CLIENT_SECRET")    
     gcs_okta_domain = "https://auth.aitrios.sony-semicon.com/oauth2/default/v1/token"
 
     device_id = "Aid-80070001-0000-2000-9002-000000000a89"
     console_api = ConsoleRESTAPI(base_url, client_id, client_secret, gcs_okta_domain)
     
-    response = console_api.GetPreviewImage(device_id)
 
-    cv_img = Utils.Base64ToCV2(response["contents"])    
+    result = console_api.GetDevices()
 
-    # 元の画像サイズ
-    original_width = 4056
-    original_height = 3040
+    devices = AITRIOSDevice.parse_devices(result["devices"])
+    for d in devices:
+        if d.device_id == "Aid-80070001-0000-2000-9002-000000000a89":          
+            print(d)
+            print(d.state.Status.SensorTemperature)
+            print(d.models[0].model_version_id)
 
-    # 画像を元の解像度にリサイズ
-    resized_image = cv2.resize(cv_img, (original_width, original_height))
-
-    # 切り抜きパラメータ指定
-    CropHOffset = 100
-    CropVOffset = 200
-    CropHSize = 1200
-    CropVSize = 1400
-
-    # クロップ処理
-    cropped_image = resized_image[CropVOffset:CropVOffset + CropVSize, CropHOffset:CropHOffset + CropHSize]
-
-    output_image_path = 'output_image_org.jpg'
-    cv2.imwrite(output_image_path, resized_image)
-
-    output_image_path = 'output_image.jpg'
-    cv2.imwrite(output_image_path, cropped_image)
-
-    output_path = "output_image2.jpg"
-    save_base64_as_image(response["contents"], output_path)
 # メイン関数を呼び出す条件
 if __name__ == "__main__":
     main()
