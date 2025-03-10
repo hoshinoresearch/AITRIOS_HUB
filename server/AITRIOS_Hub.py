@@ -156,7 +156,28 @@ async def get_provisioning_qr_code(request: Request):
 
     return response
 
-# AITRIOS ローカルHTTP用 推論結果受信
+
+# AITRIOS ローカルHTTP用 画像受信(mode 0 or 1)
+@app_ins.put("/image/{filename}")
+async def update_image(filename, request: Request):
+        try:
+                SAVE_PATH_IMG = './image'
+
+                logging.info("update image")
+                content = await request.body()
+                os.makedirs(SAVE_PATH_IMG, exist_ok=True)
+                save_file(SAVE_PATH_IMG, content, filename)
+                logging.info("Image File Saved: %s", filename)
+                return {"status":status.HTTP_200_OK}
+        except (Exception):
+                traceback.print_exc()
+
+def save_file(file_type, content, filename):
+        file_path = os.path.join(file_type, filename)
+        with open(file_path, 'wb') as w_fp:
+                w_fp.write(content)
+
+# AITRIOS ローカルHTTP用 推論結果受信(mode 1 or 2)
 @app_ins.put("/meta/{filename}")
 async def update_inference_result(filename, request: Request):
     try:
