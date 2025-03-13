@@ -74,10 +74,10 @@ class Controller(QObject):
     def set_config_host(self, file_name:str) :
         print("ホストの設定")
         payload  = {
-            "host_url": f"{self.ip_address}" + ":8080"
+            "host_url": f"http://{self.ip_address}" + ":8080"
         }
         
-        response = requests.post(f"http://{self.get_base_url()}/{file_name}/set_command_param_for_local_server_address/", json=payload)
+        response = requests.post(f"{self.get_base_url()}/{file_name}/set_command_param_for_local_server_address/", json=payload)
         if response.status_code != 200:
             return
         print(response)
