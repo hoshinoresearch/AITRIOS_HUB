@@ -39,7 +39,9 @@ pip install python-dotenv
 ### 起動方法
 uvicornでサーバーを起動
 uvicorn AITRIOS_Hub:app_ins --reload --host XXX.XXX.XXX.XXX --port 8080 --no-access-log
-
+venvで仮想環境を作っている場合以下のコマンドで仮想環境を起動しておくことを忘れずに
+(linuxの場合)source (venvディレクトリ名)/bin/activate
+(windowsの場合)(venvディレクトリ名)/Scripts/activate
 
 ## hub app
 GUIライブラリにPySide6を用いたAITRIOS対応のエッジAI センシングデバイスのセットアップおよび推論結果の確認ができるアプリ。<br/>
