@@ -45,7 +45,13 @@ class InferenceResultTableHandler:
         return self.dbhandler.cursor.fetchall()
 
     def fetch_latestdate_by_device_id(self, device_id: str):
-        self.dbhandler.cursor.execute("SELECT * FROM t_inference_result WHERE device_id = ? AND inference_datetime = (SELECT inference_datetime FROM t_inference_result ORDER BY inference_datetime DESC LIMIT 1)", (device_id,))
+        self.dbhandler.cursor.execute(
+            "SELECT * FROM t_inference_result "
+            "WHERE device_id = ? AND inference_datetime = ("
+            "SELECT inference_datetime FROM t_inference_result "
+            "WHERE device_id = ? ORDER BY inference_datetime DESC LIMIT 1)",
+            (device_id, device_id)
+        )
         return self.dbhandler.cursor.fetchall()
  
     def convert_to_json_multiple(self, data_tuples):
